@@ -198,9 +198,21 @@ class EnrollDB:
 
     def removeStudentFromSection(self, studentId, courseNum, sectionNum):
         """Removes a student friom a course and updates their GPA."""
-
-        # TODO: Execute statement. Make sure to commit
-        return
+        try:
+            cursor = self.cnx.cursor()
+            query = """
+            DELETE FROM enroll WHERE sid = %s 
+            AND cnum = %s 
+            AND secnum = %s
+            """
+            cursor.execute(query,(studentId,courseNum,sectionNum))
+            self.cnx.commit()
+            print(f"Student {studentId} has been removed from course: {courseNum}")
+            self.updateStudentGPA(studentId)
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+        finally:
+            cursor.close()
 
     def updateStudentMark(self, studentId, courseNum, sectionNum, grade):
         """Updates a student's mark in an enrolled course section and updates their grade."""
